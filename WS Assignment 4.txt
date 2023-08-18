@@ -1,0 +1,400 @@
+Question 1--
+
+import requests
+from bs4 import BeautifulSoup
+
+
+url = "https://en.wikipedia.org/wiki/List_of_most-viewed_YouTube_videos"
+response = requests.get(url)
+
+
+soup = BeautifulSoup(response.content, 'html.parser')
+
+
+table = soup.find('table', {'class': 'wikitable sortable'})
+
+
+for row in table.find_all('tr')[1:]:
+    cells = row.find_all('td')
+    rank = cells[0].text.strip()
+    name = cells[1].text.strip()
+    artist = cells[2].text.strip()
+    upload_date = cells[4].text.strip()
+    views = cells[3].text.strip().replace(',', '')  
+
+   
+    print("Rank:", rank)
+    print("Name:", name)
+    print("Artist:", artist)
+    print("Upload Date:", upload_date)
+    print("Views:", views)
+    print("-----------------------")
+
+Question 2--
+
+import requests
+from bs4 import BeautifulSoup
+
+url = "https://www.bcci.tv/"
+response = requests.get(url)
+
+soup = BeautifulSoup(response.content, 'html.parser')
+
+link = soup.find("a", text="International Fixtures")["href"]
+
+fixtures_url = url.rstrip("/") + link
+
+fixtures_response = requests.get(fixtures_url)
+
+fixtures_soup = BeautifulSoup(fixtures_response.content, 'html.parser')
+
+fixtures = fixtures_soup.find_all("div", {"class": "fixture__format-strip"})
+
+for fixture in fixtures:
+    title = fixture.find("span", {"class": "u-unskewed-text"}).text.strip()
+    series = fixture.find("span", {"class": "u-unskewed-text"}).next_sibling.strip()
+    place = fixture.find("p", {"class": "fixture__additional-info"}).text.strip()
+    date = fixture.find("div", {"class": "fixture__datetime desktop-only"}).find("span").text.strip()
+    time = fixture.find("div", {"class": "fixture__full-date"}).text.strip()
+
+    print("Match Title:", title)
+    print("Series:", series)
+    print("Place:", place)
+    print("Date:", date)
+    print("Time:", time)
+    print("-----------------------")
+
+Question 3--
+
+import requests
+from bs4 import BeautifulSoup
+
+url = "http://statisticstimes.com/"
+response = requests.get(url)
+
+soup = BeautifulSoup(response.content, "html.parser")
+
+economy_link = soup.find("div", id="top_countries")
+economy_url = economy_link.find_all("a")[2]["href"]  
+
+response = requests.get(economy_url)
+soup = BeautifulSoup(response.content, "html.parser")
+
+gdp_table = soup.find("table", class_="display dataTable")
+
+rows = gdp_table.find_all("tr")[1:]   # Exclude the header row
+
+for row in rows:
+    columns = row.find_all("td")
+    rank = columns[0].text.strip()
+    state = columns[1].text.strip()
+    gdp_18_19 = columns[2].text.strip()
+    gdp_19_20 = columns[3].text.strip()
+    share_18_19 = columns[4].text.strip()
+    gdp_billion = columns[5].text.strip()
+
+    print("Rank:", rank)
+    print("State:", state)
+    print("GSDP(18-19) - at current prices:", gdp_18_19)
+    print("GSDP(19-20) - at current prices:", gdp_19_20)
+    print("Share(18-19):", share_18_19)
+    print("GDP($ billion):", gdp_billion)
+    print("--------------------------------------")
+
+Question 4--
+
+import requests
+from bs4 import BeautifulSoup
+
+url = "https://github.com/"
+response = requests.get(url)
+
+soup = BeautifulSoup(response.content, "html.parser")
+
+explore_link = soup.find("a", href="/explore")
+
+trending_url = "https://github.com" + explore_link["href"] + "/trending"
+
+response = requests.get(trending_url)
+
+soup = BeautifulSoup(response.content, "html.parser")
+
+repositories = soup.find_all("article", class_="Box-row")
+
+for repo in repositories:
+    title = repo.find("h1").find("a").text.strip()
+    description = repo.find("p", class_="mb-1").text.strip()
+    contributors = repo.find("a", class_="mr-3").text.strip().split()[0]
+    language = repo.find("span", itemprop="programmingLanguage").text.strip()
+
+    print("Repository title:", title)
+    print("Repository description:", description)
+    print("Contributors count:", contributors)
+    print("Language used:", language)
+    print()
+
+Question 5--
+
+import requests
+from bs4 import BeautifulSoup
+
+url = "https://www.billboard.com/"
+response = requests.get(url)
+
+soup = BeautifulSoup(response.content, "html.parser")
+
+charts_link = soup.find("a", text="Charts")
+charts_url = "https://www.billboard.com" + charts_link["href"]
+
+charts_response = requests.get(charts_url)
+
+charts_soup = BeautifulSoup(charts_response.content, "html.parser")
+
+hot100_link = charts_soup.find("a", text="Hot 100")
+hot100_url = "https://www.billboard.com" + hot100_link["href"]
+
+hot100_response = requests.get(hot100_url)
+hot100_soup = BeautifulSoup(hot100_response.content, "html.parser")
+songs = hot100_soup.find_all("li", class_="chart-list__element")
+
+for song in songs:
+    song_name = song.find("span", class_="chart-element__information__song").text
+    artist_name = song.find("span", class_="chart-element__information__artist").text
+    last_week_rank = song.find("span", class_="chart-element__meta text--last").text
+    peak_rank = song.find("span", class_="chart-element__meta text--peak").text
+    weeks_on_board = song.find("span", class_="chart-element__meta text--week").text
+
+    print("Song Name:", song_name)
+    print("Artist Name:", artist_name)
+    print("Last Week Rank:", last_week_rank)
+    print("Peak Rank:", peak_rank)
+    print("Weeks on Board:", weeks_on_board)
+    print()
+
+
+import requests
+from bs4 import BeautifulSoup
+
+url = "https://www.billboard.com/"
+response = requests.get(url)
+
+soup = BeautifulSoup(response.content, "html.parser")
+
+charts_link = soup.find("a", text="Charts")
+charts_url = "https://www.billboard.com" + charts_link["href"]
+
+charts_response = requests.get(charts_url)
+
+charts_soup = BeautifulSoup(charts_response.content, "html.parser")
+
+hot100_link = charts_soup.find("a", text="Hot 100")
+hot100_url = "https://www.billboard.com" + hot100_link["href"]
+
+hot100_response = requests.get(hot100_url)
+
+hot100_soup = BeautifulSoup(hot100_response.content, "html.parser")
+
+songs = hot100_soup.find_all("li", class_="chart-list__element")
+
+for song in songs:
+    song_name = song.find("span", class_="chart-element__information__song").text
+    artist_name = song.find("span", class_="chart-element__information__artist").text
+    last_week_rank = song.find("span", class_="chart-element__meta text--last").text
+    peak_rank = song.find("span", class_="chart-element__meta text--peak").text
+    weeks_on_board = song.find("span", class_="chart-element__meta text--week").text
+
+    print("Song Name:", song_name)
+    print("Artist Name:", artist_name)
+    print("Last Week Rank:", last_week_rank)
+    print("Peak Rank:", peak_rank)
+    print("Weeks on Board:", weeks_on_board)
+    print()
+
+Question 6--
+
+import requests
+from bs4 import BeautifulSoup
+
+url = "https://www.theguardian.com/news/datablog/2012/aug/09/best-selling-books-all-time-fifty-shades-grey"
+response = requests.get(url)
+
+soup = BeautifulSoup(response.content, "html.parser")
+table = soup.find("table")
+
+rows = table.find_all("tr")[1:]
+for row in rows:
+    columns = row.find_all("td")
+    book_name = columns[1].text.strip()
+    author_name = columns[2].text.strip()
+    volumes_sold = columns[3].text.strip()
+    publisher = columns[4].text.strip()
+    genre = columns[5].text.strip()
+
+    print("Book Name:", book_name)
+    print("Author Name:", author_name)
+    print("Volumes Sold:", volumes_sold)
+    print("Publisher:", publisher)
+    print("Genre:", genre)
+    print()
+
+import requests
+from bs4 import BeautifulSoup
+
+url = "https://www.theguardian.com/news/datablog/2012/aug/09/best-selling-books-all-time-fifty-shades-grey"
+response = requests.get(url)
+
+soup = BeautifulSoup(response.content, "html.parser")
+
+table = soup.find("table")
+
+rows = table.find_all("tr")[1:]
+
+for row in rows:
+    columns = row.find_all("td")
+    book_name = columns[1].text.strip()
+    author_name = columns[2].text.strip()
+    volumes_sold = columns[3].text.strip()
+    publisher = columns[4].text.strip()
+    genre = columns[5].text.strip()
+
+    print("Book Name:", book_name)
+    print("Author Name:", author_name)
+    print("Volumes Sold:", volumes_sold)
+    print("Publisher:", publisher)
+    print("Genre:", genre)
+    print()
+
+Question 7--
+
+import requests
+from bs4 import BeautifulSoup
+
+url = "https://www.imdb.com/list/ls095964455/"
+response = requests.get(url)
+
+soup = BeautifulSoup(response.content, "html.parser")
+
+series_list = soup.find_all("div", class_="lister-item-content")
+
+for series in series_list:
+    name = series.h3.a.text
+    year_span = series.find("span", class_="lister-item-year").text.strip("()")
+    genre = series.find("span", class_="genre").text.strip()
+    run_time = series.find("span", class_="runtime").text.strip()
+    ratings = series.find("span", class_="ipl-rating-star__rating").text.strip()
+    votes = series.find("span", attrs={"name": "nv"}).text.replace(",", "")
+
+    print("Name:", name)
+    print("Year Span:", year_span)
+    print("Genre:", genre)
+    print("Run Time:", run_time)
+    print("Ratings:", ratings)
+    print("Votes:", votes)
+    print()
+
+import requests
+from bs4 import BeautifulSoup
+
+url = "https://www.imdb.com/list/ls095964455/"
+response = requests.get(url)
+
+soup = BeautifulSoup(response.content, "html.parser")
+
+series_list = soup.find_all("div", class_="lister-item-content")
+
+for series in series_list:
+    name = series.h3.a.text
+    year_span = series.find("span", class_="lister-item-year").text.strip("()")
+    genre = series.find("span", class_="genre").text.strip()
+    run_time = series.find("span", class_="runtime").text.strip()
+    ratings = series.find("span", class_="ipl-rating-star__rating").text.strip()
+    votes = series.find("span", attrs={"name": "nv"}).text.replace(",", "")
+
+    print("Name:", name)
+    print("Year Span:", year_span)
+    print("Genre:", genre)
+    print("Run Time:", run_time)
+    print("Ratings:", ratings)
+    print("Votes:", votes)
+    print()
+
+Question 6--
+
+import requests
+from bs4 import BeautifulSoup
+
+uci_url = "https://archive.ics.uci.edu/"
+response = requests.get(uci_url)
+
+soup = BeautifulSoup(response.content, "html.parser")
+
+all_datasets_link = soup.find("a", href="datasets.php")
+
+datasets_url = uci_url + all_datasets_link.get("href")
+datasets_response = requests.get(datasets_url)
+
+datasets_soup = BeautifulSoup(datasets_response.content, "html.parser")
+
+table = datasets_soup.find("table", cellpadding="3")
+
+rows = table.find_all("tr")[1:]
+
+for row in rows:
+    columns = row.find_all("td")
+    dataset_name = columns[0].text.strip()
+    data_type = columns[1].text.strip()
+    task = columns[2].text.strip()
+    attribute_type = columns[3].text.strip()
+    num_instances = columns[4].text.strip()
+    num_attributes = columns[5].text.strip()
+    year = columns[6].text.strip()
+
+    print("Dataset Name:", dataset_name)
+    print("Data Type:", data_type)
+    print("Task:", task)
+    print("Attribute Type:", attribute_type)
+    print("Number of Instances:", num_instances)
+    print("Number of Attributes:", num_attributes)
+    print("Year:", year)
+    print()
+
+import requests
+from bs4 import BeautifulSoup
+
+uci_url = "https://archive.ics.uci.edu/"
+response = requests.get(uci_url)
+
+soup = BeautifulSoup(response.content, "html.parser")
+
+all_datasets_link = soup.find("a", href="datasets.php")
+
+datasets_url = uci_url + all_datasets_link.get("href")
+datasets_response = requests.get(datasets_url)
+
+datasets_soup = BeautifulSoup(datasets_response.content, "html.parser")
+
+table = datasets_soup.find("table", cellpadding="3")
+
+rows = table.find_all("tr")[1:]
+
+for row in rows:
+    columns = row.find_all("td")
+    dataset_name = columns[0].text.strip()
+    data_type = columns[1].text.strip()
+    task = columns[2].text.strip()
+    attribute_type = columns[3].text.strip()
+    num_instances = columns[4].text.strip()
+    num_attributes = columns[5].text.strip()
+    year = columns[6].text.strip()
+
+    print("Dataset Name:", dataset_name)
+    print("Data Type:", data_type)
+    print("Task:", task)
+    print("Attribute Type:", attribute_type)
+    print("Number of Instances:", num_instances)
+    print("Number of Attributes:", num_attributes)
+    print("Year:", year)
+    print()
+
+
+.........................................................................................................................................
